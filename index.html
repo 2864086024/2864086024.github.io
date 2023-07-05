@@ -1,3 +1,109 @@
-<p>Hello 大家好</p>
-<p>我是qzm</p>
-<p>很高兴你来到这里</p>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>计时器</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    h1 {
+      color: #333;
+    }
+    p {
+      color: #777;
+    }
+    .timer {
+      font-size: 48px;
+      margin-top: 20px;
+      color: #333;
+    }
+    .controls {
+      margin-top: 20px;
+    }
+    button {
+      font-size: 16px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>计时器</h1>
+  <p>设定结束时间（格式：YYYY-MM-DD HH:MM:SS）：</p>
+  <input type="text" id="endtime" placeholder="请输入结束时间">
+  <button id="start">开始计时</button>
+  <button id="stop" disabled>终止计时</button>
+  <div class="timer" id="timer"></div>
+
+  <script>
+    var timerId;
+    var endTime;
+
+    function startTimer() {
+      var input = document.getElementById('endtime');
+      var endTimeString = input.value.trim();
+      if (!endTimeString) {
+        alert('请输入结束时间！');
+        return;
+      }
+      endTime = new Date(endTimeString).getTime();
+
+      if (isNaN(endTime)) {
+        alert('输入的时间格式有误！');
+        return;
+      }
+      
+      var now = new Date().getTime();
+      var distance = endTime - now;
+
+      if (distance <= 0) {
+        alert('输入的时间已过期！');
+        return;
+      }
+
+      clearInterval(timerId);
+      timerId = setInterval(updateTimer, 1000);
+
+      document.getElementById('start').disabled = true;
+      document.getElementById('stop').disabled = false;
+    }
+
+    function updateTimer() {
+      var now = new Date().getTime();
+      var distance = endTime - now;
+
+      if (distance <= 0) {
+        clearInterval(timerId);
+        document.getElementById('timer').innerHTML = '时间到了！';
+        document.getElementById('start').disabled = false;
+        document.getElementById('stop').disabled = true;
+      } else {
+        var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById('timer').innerHTML = days + '天 ' + hours + '小时 ' + minutes + '分钟 ' + seconds + '秒';
+      }
+    }
+
+    function stopTimer() {
+      clearInterval(timerId);
+      document.getElementById('timer').innerHTML = '';
+      document.getElementById('start').disabled = false;
+      document.getElementById('stop').disabled = true;
+    }
+
+    document.getElementById('start').addEventListener('click', startTimer);
+    document.getElementById('stop').addEventListener('click', stopTimer);
+  </script>
+</body>
+</html>
